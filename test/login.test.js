@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
+import { describe, it, expect, beforeEach } from 'vitest'
 import Login from '@/views/Login.vue'
 
 describe('Login', () => {
