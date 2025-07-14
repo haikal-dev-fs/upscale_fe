@@ -29,7 +29,8 @@
 </template>
 
 <script setup>
-import { ref, watch, defineProps, defineEmits } from 'vue'
+import { ref, watch, defineProps, defineEmits, onMounted } from 'vue'
+import { Modal } from 'bootstrap'
 
 const props = defineProps({
     show: Boolean,
@@ -42,6 +43,30 @@ const props = defineProps({
 const emit = defineEmits(['submit'])
 
 const form = ref({ title: '', description: '' })
+let modalInstance = null
+
+onMounted(() => {
+    const modalEl = document.getElementById(props.modalId)
+    if (modalEl) {
+        modalInstance = Modal.getOrCreateInstance(modalEl)
+        modalEl.addEventListener('hidden.bs.modal', () => {
+            emit('close')
+        })
+    }
+})
+
+watch(() => props.show, (val) => {
+    if (!modalInstance) {
+        const modalEl = document.getElementById(props.modalId)
+        if (modalEl) {
+            modalInstance = Modal.getOrCreateInstance(modalEl)
+        }
+    }
+    if (modalInstance) {
+        if (val) modalInstance.show()
+        else modalInstance.hide()
+    }
+})
 
 watch(() => props.initial, (val) => {
     if (val) form.value = { ...val }

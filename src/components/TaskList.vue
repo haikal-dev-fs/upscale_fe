@@ -27,7 +27,10 @@
                     </td>
                     <td>
                         <button class="btn btn-sm btn-outline-primary me-1" @click="$emit('edit', task)">Edit</button>
-                        <button class="btn btn-sm btn-outline-danger" @click="$emit('delete', task)">Delete</button>
+                        <button class="btn btn-sm btn-outline-danger me-1"
+                            @click="$emit('delete', task)">Delete</button>
+                        <button v-if="task.status !== 'done'" class="btn btn-sm btn-success"
+                            @click="$emit('done', task)">Set Done</button>
                     </td>
                 </tr>
                 <tr v-if="!loading && tasks.length === 0">

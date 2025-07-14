@@ -6,7 +6,8 @@ import Dashboard from '@/views/Dashboard.vue'
 const routes = [
   { path: '/login', component: Login, meta: { guest: true } },
   { path: '/register', component: Register, meta: { guest: true } },
-  { path: '/', component: Dashboard, meta: { auth: true } },
+  { path: '/dashboard', component: Dashboard, meta: { auth: true } },
+  { path: '/', redirect: '/dashboard' },
 ]
 
 const router = createRouter({ history: createWebHistory(), routes })

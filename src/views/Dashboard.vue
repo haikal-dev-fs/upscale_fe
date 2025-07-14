@@ -33,12 +33,38 @@
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#taskModal"
                     @click="openAddTask">Add Task</button>
             </div>
-            <TaskList :tasks="tasks" :loading="loadingTasks" @edit="openEditTask" @delete="deleteTask" />
+            <div class="mb-3">
+                <label for="statusFilter" class="form-label me-2">Filter Status:</label>
+                <select id="statusFilter" v-model="statusFilter" class="form-select w-auto d-inline-block"
+                    @change="handleFilterChange">
+                    <option value="">All</option>
+                    <option value="pending">Pending</option>
+                    <option value="done">Done</option>
+                </select>
+            </div>
+            <TaskList :tasks="tasks" :loading="loadingTasks" @edit="openEditTask" @delete="deleteTask"
+                @done="setTaskDone" />
+            <nav v-if="lastPage > 1">
+                <ul class="pagination justify-content-center mt-3">
+                    <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                        <button class="page-link" @click="goToPage(currentPage - 1)"
+                            :disabled="currentPage === 1">Previous</button>
+                    </li>
+                    <li v-for="page in lastPage" :key="page" class="page-item"
+                        :class="{ active: currentPage === page }">
+                        <button class="page-link" @click="goToPage(page)">{{ page }}</button>
+                    </li>
+                    <li class="page-item" :class="{ disabled: currentPage === lastPage }">
+                        <button class="page-link" @click="goToPage(currentPage + 1)"
+                            :disabled="currentPage === lastPage">Next</button>
+                    </li>
+                </ul>
+            </nav>
         </div>
 
         <!-- Task Modal -->
         <TaskForm :show="showTaskModal" :isEdit="isEdit" :initial="selectedTask" :loading="loadingTaskAction"
-            :error="taskError" modalId="taskModal" @submit="handleTaskSubmit" />
+            :error="taskError" modalId="taskModal" @submit="handleTaskSubmit" @close="showTaskModal = false" />
     </div>
 </template>
 
@@ -61,6 +87,11 @@ const taskError = ref('')
 const showTaskModal = ref(false)
 const isEdit = ref(false)
 const selectedTask = ref(null)
+const statusFilter = ref("")
+
+const currentPage = ref(1)
+const lastPage = ref(1)
+const total = ref(0)
 
 function logout() {
     userStore.logout()
@@ -76,13 +107,32 @@ async function fetchQuote() {
     }
 }
 
+function handleFilterChange() {
+    currentPage.value = 1
+    fetchTasks()
+}
+
+function goToPage(page) {
+    if (page < 1 || page > lastPage.value) return
+    currentPage.value = page
+    fetchTasks()
+}
+
 async function fetchTasks() {
     loadingTasks.value = true
     try {
-        const { data } = await api.get('/tasks')
+        const params = {}
+        if (statusFilter.value) params.status = statusFilter.value
+        params.page = currentPage.value
+        const { data } = await api.get('/tasks', { params })
         tasks.value = data.data || []
+        currentPage.value = data.current_page || 1
+        lastPage.value = data.last_page || 1
+        total.value = data.total || 0
     } catch {
         tasks.value = []
+        lastPage.value = 1
+        total.value = 0
     } finally {
         loadingTasks.value = false
     }
@@ -126,6 +176,18 @@ async function deleteTask(task) {
         fetchTasks()
     } catch { }
     loadingTaskAction.value = false
+}
+
+async function setTaskDone(task) {
+    loadingTaskAction.value = true
+    try {
+        await api.patch(`/tasks/${task.id}`, { status: 'done' })
+        fetchTasks()
+    } catch (e) {
+        taskError.value = e?.response?.data?.message || 'Failed to set done.'
+    } finally {
+        loadingTaskAction.value = false
+    }
 }
 
 onMounted(() => {
