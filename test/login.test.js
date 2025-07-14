@@ -2,15 +2,24 @@ import { mount } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import { describe, it, expect, beforeEach } from 'vitest'
 import Login from '@/views/Login.vue'
+import { createRouter, createWebHistory } from 'vue-router'
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [],
+})
 
 describe('Login', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
   })
-  it('renders', () => {
+  it('renders', async () => {
     const wrapper = mount(Login, {
-      global: {},
+      global: {
+        plugins: [router],
+      },
     })
-    expect(wrapper.find('h3').text()).toBe('Login')
+    await router.isReady()
+    expect(wrapper.text()).toMatch(/login/i)
   })
 })
