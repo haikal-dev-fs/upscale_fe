@@ -14,7 +14,8 @@ jobs:
           node-version: 18
           cache: npm
           cache-dependency-path: package-lock.json
-      - run: npm ci
+      - run: rm -rf node_modules package-lock.json
+      - run: npm install
       - run: npx vite --version
       - run: npm list @vitejs/plugin-vue
       - run: npm run build # vite build
