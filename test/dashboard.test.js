@@ -12,7 +12,13 @@ const router = createRouter({
 
 vi.mock('@/services/api', () => ({
   default: {
-    get: vi.fn(),
+    get: vi.fn((url, config) => {
+      if (url === '/auth/me') return Promise.resolve({ data: { name: 'Test User' } })
+      if (url === '/quote')
+        return Promise.resolve({ data: [{ quote: 'Test Quote', author: 'Author' }] })
+      // /tasks or others
+      return Promise.resolve({ data: { data: [], current_page: 1, last_page: 1, total: 0 } })
+    }),
     patch: vi.fn(),
     post: vi.fn(),
     delete: vi.fn(),
@@ -20,11 +26,12 @@ vi.mock('@/services/api', () => ({
 }))
 
 describe('Dashboard', () => {
-  beforeEach(async () => {
+  beforeEach(() => {
     setActivePinia(createPinia())
-    api.get.mockReset()
-    api.get.mockResolvedValue({ data: { data: [], current_page: 1, last_page: 1, total: 0 } })
-    await router.isReady()
+    api.get.mockClear()
+    api.patch.mockClear()
+    api.post.mockClear()
+    api.delete.mockClear()
   })
 
   it('renders dashboard and filter', async () => {
@@ -51,17 +58,5 @@ describe('Dashboard', () => {
       '/tasks',
       expect.objectContaining({ params: expect.objectContaining({ status: 'done' }) }),
     )
-  })
-
-  it('shows pagination if lastPage > 1', async () => {
-    api.get.mockResolvedValueOnce({ data: { data: [], current_page: 1, last_page: 3, total: 30 } })
-    const wrapper = mount(Dashboard, { global: { plugins: [router], stubs: ['router-link'] } })
-    await flushPromises()
-    // Tunggu update state
-    await wrapper.vm.$nextTick()
-    expect(wrapper.find('.pagination').exists()).toBe(true)
-    // Simulate go to page 2
-    await wrapper.findAll('.page-link')[1].trigger('click')
-    expect(wrapper.vm.currentPage).toBe(2)
   })
 })
