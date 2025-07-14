@@ -1,5 +1,4 @@
 import { vi } from 'vitest'
-import { setActivePinia, createPinia } from 'pinia'
 import { createTestingPinia } from '@pinia/testing'
 
 /**
@@ -14,7 +13,3 @@ export function testingPinia() {
   })
 }
 
-// automatically set a fresh testing pinia for all tests
-beforeEach(() => {
-  setActivePinia(createPinia())
-})
