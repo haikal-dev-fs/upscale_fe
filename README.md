@@ -1,41 +1,37 @@
-# todo-frontend
+---
 
-This template should help get you started developing with Vue 3 in Vite.
+## `todo-frontend/README.md`  (Vue 3 + Vite)
 
-## Recommended IDE Setup
+```markdown
+# Todo Frontend – Vue 3 + Vite
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+A minimalist single‑page app that consumes the Todo API.  
+Live demo: <https://upscalefe-production.up.railway.app/>
 
-## Customize configuration
+---
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## ✨ Features
 
-## Project Setup
+- **Vue 3 Composition API**
+- **Pinia** for state management
+- **Vue Router 4** with public & protected routes
+- **Axios** wrapper with auth interceptor
+- **Bootstrap 5** for quick styling
+- Environment‑based API URL (`VITE_API_URL`)
+- Unit & component tests with **Vitest** / **@vue/test‑utils**
 
-```sh
-npm install
-```
+---
 
-### Compile and Hot-Reload for Development
+## 🚀 Quick start
 
-```sh
-npm run dev
-```
+```bash
+git clone <repo-url>
+cd todo-frontend
+npm install      # or pnpm / yarn
 
-### Compile and Minify for Production
+# copy env & set backend URL
+cp .env.example .env
+echo "VITE_API_URL=http://localhost:8000" >> .env
 
-```sh
-npm run build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
+npm run dev      # hot‑reload at http://localhost:5173
 ```

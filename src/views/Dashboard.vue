@@ -10,6 +10,20 @@
             </div>
         </nav>
 
+        <!-- User Info -->
+        <div class="container mb-3">
+            <div class="alert alert-info d-flex align-items-center" v-if="userStore.user">
+                <div>
+                    <strong>Logged in as: </strong>
+                    <span>{{ userStore.user.name || 'User' }}</span>
+                    <span v-if="userStore.user.email">&lt;{{ userStore.user.email }}&gt;</span>
+                </div>
+            </div>
+            <div class="alert alert-secondary" v-else>
+                Loading user info...
+            </div>
+        </div>
+
         <!-- Quote Card -->
         <div class="container mb-4">
             <div class="row justify-content-center">
@@ -193,5 +207,6 @@ async function setTaskDone(task) {
 onMounted(() => {
     fetchQuote()
     fetchTasks()
+    if (!userStore.user) userStore.fetchMe()
 })
 </script>
