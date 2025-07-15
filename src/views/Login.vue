@@ -47,7 +47,6 @@ async function login() {
     error.value = ''
     try {
         const { data } = await api.post('/auth/login', form.value)
-        console.log(data);
         userStore.setToken(data.token)
         router.push('/')
     } catch (e) {
